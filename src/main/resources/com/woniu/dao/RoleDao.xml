@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.woniu.dao.RoleDao">
+ 	<sql id="base_col_list">
+ 		rid,rname
+ 	</sql>
+ 	<select id="findAll" resultType="role" parameterType="pageBean">
+ 		select 
+ 		<include refid="base_col_list"></include>
+ 		from role
+ 		<where>
+ 			<if test="queryVal!=null">
+ 				rname like concat('%',#{queryVal},'%')
+ 			</if>
+ 		</where>
+ 		limit ${(currentPage-1)*pageSize},${pageSize}
+ 	</select>
+ 	<select id="getTotalCount" resultType="java.lang.Integer" parameterType="pageBean">
+ 		select count(*) from role
+ 		<where>
+ 			<if test="queryVal!=null">
+ 				rname like concat('%',#{queryVal},'%')
+ 			</if>
+ 		</where>
+ 	</select>
+ 	<insert id="roleSave" parameterType="role">
+ 		insert into role
+ 		values(null,#{rname})
+ 	</insert>
+ 	<select id="findOne" parameterType="java.lang.Integer" resultType="role">
+ 		select
+ 		<include refid="base_col_list"></include>
+ 		from role
+ 		<where>
+ 			rid=#{rid}
+ 		</where>
+ 	</select>
+ 	<update id="roleUpdate" parameterType="role">
+ 		update role set rname=#{rname} 
+ 		<where>
+ 			rid=#{rid}
+ 		</where>
+ 	</update>
+ 	<delete id="deleteRole" parameterType="java.lang.Integer">
+ 		delete from role where rid=#{rid}
+ 	</delete>
+ 	<delete id="delRoles" >
+ 		delete from role
+ 		<where>
+ 			rid in 
+			<foreach collection="array" open="(" close=")" separator="," item="rid">
+				#{rid}
+			</foreach>
+		</where>
+ 	</delete>
+ 	<select id="selectRole" resultType="role">
+ 		select
+ 		<include refid="base_col_list"></include>
+ 		from role
+ 	</select>
+</mapper>

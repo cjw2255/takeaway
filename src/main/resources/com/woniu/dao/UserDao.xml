@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.woniu.dao.UserDao">
+  	<select id="selectAll"  resultMap="urMap" >
+	 	select * from users u,role r 
+	 	<where>
+	 		u.rid=r.rid and r.rid=#{rid}
+	 		<if test="pageBean.queryVal!=null">
+	 			and uname like concat('%',#{pageBean.queryVal},'%')
+	 		</if>
+	 	</where> 
+	 	limit ${(pageBean.getCurrentPage()-1)*pageBean.getPageSize()},${pageBean.getPageSize()}
+	 </select>
+	 <resultMap type="user" id="urMap">
+	 	<id property="uid" column="uid"/>
+	 	<result property="uaccount" column="uaccount"/>
+	 	<result property="upassword" column="upassword"/>
+	 	<result property="uname" column="uname"/>
+	 	<result property="uaddress" column="uaddress"/>
+	 	<result property="ustatus" column="ustatus"/>
+	 	<association property="role" javaType="role">
+	 		<id property="rid" column="rid"/>
+	 		<result property="rname" column="rname"/>
+	 	</association>
+	 </resultMap>
+	 <select id="getTotalCount" resultType="java.lang.Integer">
+	 	select count(*) from users u,role r 
+	 	<where>
+	 		u.rid=r.rid and r.rid=#{rid}
+	 		<if test="pageBean.queryVal!=null">
+	 			and uname like concat('%',#{pageBean.queryVal},'%')
+	 		</if>
+	 	</where> 
+	 </select>
+	 <delete id="deleteUser" parameterType="java.lang.Integer">
+	 	delete from users where uid=#{uid}
+	 </delete>
+	 <delete id="delUsers" parameterType="java.lang.Integer">
+	 	delete from users
+	 	<where>
+	 		uid in 
+			<foreach collection="array" open="(" close=")" separator="," item="uid">
+				#{uid}
+			</foreach>
+	 	</where>
+	 </delete>
+	 <select id="findOne" resultMap="urMap" parameterType="java.lang.Integer">
+	 	select * from users u,role r where u.rid=r.rid and uid=#{uid}
+	 </select>
+	 <update id="resetPwd" parameterType="user">
+	 	update users set upassword=#{upassword}
+	 	<where>
+	 		uid=#{uid}
+	 	</where>
+	 </update>
+	 <update id="activation" parameterType="user">
+	 	update users set ustatus=#{ustatus}
+	 	<where>
+	 		uid=#{uid}
+	 	</where>
+	 </update>
+</mapper>
